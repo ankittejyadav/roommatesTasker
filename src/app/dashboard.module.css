@@ -1,0 +1,79 @@
+.header {
+    margin-bottom: 24px;
+}
+
+.headerTop {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.headerTop>div:first-child {
+    flex: 1;
+}
+
+.switchBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-sm);
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.switchBtn:hover {
+    background: var(--bg-surface-2);
+    border-color: var(--border-hover);
+}
+
+.housePicker {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+}
+
+.houseOption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.houseOption:hover {
+    background: var(--bg-surface-2);
+}
+
+.houseActive {
+    background: var(--accent-bg);
+    border-color: var(--accent-border);
+    color: var(--accent-soft);
+}
+
+.houseMembers {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}

@@ -1,0 +1,125 @@
+.addRow {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    align-items: center;
+}
+
+.addRow .inputField {
+    flex: 1;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    transition: all 0.15s ease;
+}
+
+.item:hover {
+    background: var(--bg-surface-2);
+}
+
+.itemMyClaim {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+}
+
+.itemCompleted {
+    opacity: 0.4;
+    background: var(--bg-surface-0);
+}
+
+.itemMain {
+    flex: 1;
+    min-width: 0;
+}
+
+.itemText {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+}
+
+.itemTextDone {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.itemMeta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 3px;
+}
+
+.itemBy {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.claimTag {
+    font-size: 0.62rem;
+    font-weight: 700;
+    background: var(--accent-bg);
+    color: var(--accent-soft);
+    padding: 1px 7px;
+    border-radius: var(--r-full);
+}
+
+.itemActions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.claimBtn {
+    padding: 6px 12px;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--r-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.claimBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.actionBtn {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--r-sm);
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    color: var(--text-muted);
+}
+
+.actionBtn:hover {
+    background: var(--bg-surface-3);
+    border-color: var(--border-hover);
+}
