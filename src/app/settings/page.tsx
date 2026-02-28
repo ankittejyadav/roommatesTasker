@@ -34,7 +34,7 @@ export default function SettingsPage() {
                 // If permission was already granted previously, automatically grab the token and save it
                 if (Notification.permission === 'granted') {
                     requestFcmToken().then((token) => {
-                        if (token) saveFcmToken(house.id, house, user.uid, token).catch(console.error);
+                        if (token) saveFcmToken(house.id, house.data, user.uid, token).catch(console.error);
                     }).catch(console.error);
                 }
             } else {
