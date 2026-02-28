@@ -10,6 +10,7 @@ import {
   subscribeToHouse,
   completeTaskInFirestore,
   overrideCurrentAssignee,
+  triggerManualReminder,
 } from '@/lib/firestore';
 import { getCurrentAssigneeUid, getMemberByUid } from '@/lib/schedule';
 import { requestNotificationPermission, notifyIfAssigned } from '@/lib/notifications';
@@ -105,8 +106,43 @@ export default function DashboardPage() {
     setTimeout(() => setToast(null), 3000);
   }, [houseId, data, overrideTaskId]);
 
+  const handleRemind = async (taskId: string) => {
+    if (!houseId || !data) return;
+    const task = data.tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    const assigneeUid = getCurrentAssigneeUid(task);
+    if (!assigneeUid) return;
+
+    const member = data.members.find((m) => m.uid === assigneeUid);
+    if (!member || !member.fcmTokens || member.fcmTokens.length === 0) {
+      setToast('⚠️ Assignee has not enabled app notifications');
+      setTimeout(() => setToast(null), 3000);
+      return;
+    }
+
+    try {
+      await fetch('/api/notifications/trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetTokens: member.fcmTokens,
+          title: `🔔 Reminder: ${task.name}`,
+          message: `It's your turn to do the ${task.name}.`,
+        }),
+      });
+
+      await triggerManualReminder(houseId, taskId, data);
+      setToast('✅ Reminder sent to their phone!');
+      setTimeout(() => setToast(null), 3000);
+    } catch {
+      setToast('⚠️ Failed to send reminder');
+      setTimeout(() => setToast(null), 3000);
+    }
+  };
+
   if (authLoading || loading) {
-    return <div className="loadingPage"><div className="spinner" /><p>Loading your tasks...</p></div>;
+    return <div className="loadingPage"><div className="spinner" /><p>Finding your house...</p></div>;
   }
   if (!data || !user) return null;
 
@@ -164,6 +200,7 @@ export default function DashboardPage() {
                 key={task.id} task={task} members={data.members}
                 currentUserUid={user.uid} isAdmin={isAdmin}
                 onComplete={handleComplete} onOverride={setOverrideTaskId}
+                onRemind={handleRemind}
               />
             ))}
           </div>
@@ -179,6 +216,7 @@ export default function DashboardPage() {
                 key={task.id} task={task} members={data.members}
                 currentUserUid={user.uid} isAdmin={isAdmin}
                 onComplete={handleComplete} onOverride={setOverrideTaskId}
+                onRemind={handleRemind}
               />
             ))}
           </div>

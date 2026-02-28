@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { HouseData } from '@/lib/types';
-import { findHouseByUser, subscribeToHouse } from '@/lib/firestore';
-import { requestNotificationPermission, isNotificationSupported } from '@/lib/notifications';
+import { findHouseByUser, subscribeToHouse, saveFcmToken } from '@/lib/firestore';
+import { requestFcmToken, isNotificationSupported } from '@/lib/notifications';
 import styles from './settings.module.css';
 
 export default function SettingsPage() {
@@ -31,6 +31,12 @@ export default function SettingsPage() {
 
             if (isNotificationSupported()) {
                 setNotifStatus(Notification.permission);
+                // If permission was already granted previously, automatically grab the token and save it
+                if (Notification.permission === 'granted') {
+                    requestFcmToken().then((token) => {
+                        if (token) saveFcmToken(house.id, house, user.uid, token).catch(console.error);
+                    }).catch(console.error);
+                }
             } else {
                 setNotifStatus('unsupported');
             }
@@ -48,8 +54,48 @@ export default function SettingsPage() {
     const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
     const handleEnableNotif = async () => {
-        const granted = await requestNotificationPermission();
-        setNotifStatus(granted ? 'granted' : 'denied');
+        try {
+            setNotifStatus('requesting');
+            const token = await requestFcmToken();
+
+            if (token) {
+                if (houseId && data) await saveFcmToken(houseId, data, user.uid, token);
+                setNotifStatus('granted');
+                showToast('🔔 Native push notifications enabled!');
+            } else {
+                setNotifStatus(Notification.permission === 'denied' ? 'denied' : 'unknown');
+                if (Notification.permission === 'default') showToast('Notification permission was dismissed');
+            }
+        } catch (err: any) {
+            console.error('FCM Token Error:', err);
+            setNotifStatus('unknown');
+            showToast(`⚠️ Error: ${err.message?.substring(0, 50) || 'Failed to get token'}`);
+        }
+    };
+
+    const handleTestPush = async () => {
+        if (!houseId || !data) return;
+        const member = data.members.find((m) => m.uid === user.uid);
+        if (!member || !member.fcmTokens || member.fcmTokens.length === 0) {
+            showToast('⚠️ Please enable notifications first');
+            return;
+        }
+
+        try {
+            showToast('⏳ Sending test push...');
+            await fetch('/api/notifications/trigger', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetTokens: member.fcmTokens,
+                    title: `🧪 Test Notification`,
+                    message: `Push notifications are working perfectly on this device!`,
+                }),
+            });
+            showToast('✅ Test push sent! Check your notification bar.');
+        } catch {
+            showToast('⚠️ Failed to send test push');
+        }
     };
 
     const handleSignOut = async () => {
@@ -122,13 +168,23 @@ export default function SettingsPage() {
             <div className="section">
                 <h2 className="sectionTitle">Notifications</h2>
                 {notifStatus === 'granted' ? (
-                    <p className={styles.statusGood}>✅ Browser notifications enabled</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <p className={styles.statusGood}>✅ App push notifications active</p>
+                        <button className="btnGhost" onClick={handleEnableNotif} style={{ borderColor: 'var(--border)' }}>
+                            🔄 Refresh Device Registration
+                        </button>
+                        <button className="btnSecondary" onClick={handleTestPush}>
+                            🧪 Test Notification Delivery
+                        </button>
+                    </div>
                 ) : notifStatus === 'denied' ? (
-                    <p className={styles.statusWarn}>🚫 Blocked — enable in browser settings</p>
+                    <p className={styles.statusWarn}>🚫 Blocked — enable in device settings</p>
                 ) : notifStatus === 'unsupported' ? (
                     <p className={styles.statusWarn}>⚠️ Not supported in this browser</p>
+                ) : notifStatus === 'requesting' ? (
+                    <p className={styles.statusWait}>⏳ Requesting permission...</p>
                 ) : (
-                    <button className="btnSecondary" onClick={handleEnableNotif}>🔔 Enable Notifications</button>
+                    <button className="btnSecondary" onClick={handleEnableNotif}>🔔 Enable App Notifications</button>
                 )}
             </div>
 

@@ -5,6 +5,7 @@ export interface MemberProfile {
   displayName: string;
   email: string;
   photoURL: string | null;
+  fcmTokens?: string[]; // Array of device tokens for push notifications
 }
 
 export interface TaskHistoryEntry {
@@ -29,6 +30,7 @@ export interface Task {
   lastCompletedBy: string | null; // display name
   history: TaskHistoryEntry[];
   temporarySwap: TemporarySwap | null; // one-time override
+  manualReminderSent?: boolean; // track if a manual reminder was sent today
 }
 
 export interface FeedbackItem {

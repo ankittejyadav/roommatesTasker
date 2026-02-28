@@ -208,6 +208,24 @@ export async function updateMemberProfile(
     await updateDoc(doc(getFirebaseDb(), HOUSES, houseId), { members: updatedMembers });
 }
 
+export async function saveFcmToken(
+    houseId: string,
+    currentData: HouseData,
+    uid: string,
+    token: string
+): Promise<void> {
+    const member = currentData.members.find((m) => m.uid === uid);
+    if (!member) return;
+
+    const currentTokens = member.fcmTokens || [];
+    if (currentTokens.includes(token)) return; // Already saved
+
+    // Keep only the last 5 tokens to prevent Bloat (in case they login from many devices)
+    const newTokens = [...currentTokens, token].slice(-5);
+
+    await updateMemberProfile(houseId, currentData, uid, { fcmTokens: newTokens });
+}
+
 // ───────────────────────── Tasks ─────────────────────────
 
 export async function completeTaskInFirestore(
@@ -229,6 +247,7 @@ export async function completeTaskInFirestore(
             lastCompletedDate: now,
             lastCompletedBy: completedByName,
             temporarySwap: null, // clear one-time swap
+            manualReminderSent: false, // reset manual reminder
             history: [
                 { uid: completedByUid, name: completedByName, date: now },
                 ...task.history.slice(0, 49),
@@ -286,6 +305,18 @@ export async function overrideCurrentAssignee(
             ...task,
             temporarySwap: { originalUid, swappedUid: swapWithUid },
         };
+    });
+    await updateDoc(doc(getFirebaseDb(), HOUSES, houseId), { tasks: updatedTasks });
+}
+
+export async function triggerManualReminder(
+    houseId: string,
+    taskId: string,
+    currentData: HouseData
+): Promise<void> {
+    const updatedTasks = currentData.tasks.map((task) => {
+        if (task.id !== taskId) return task;
+        return { ...task, manualReminderSent: true };
     });
     await updateDoc(doc(getFirebaseDb(), HOUSES, houseId), { tasks: updatedTasks });
 }

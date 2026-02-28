@@ -15,7 +15,7 @@ let _app: FirebaseApp | null = null;
 let _auth: Auth | null = null;
 let _db: Firestore | null = null;
 
-function getApp(): FirebaseApp {
+export function getApp(): FirebaseApp {
     if (!_app) {
         _app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
     }

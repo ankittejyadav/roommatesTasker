@@ -19,14 +19,16 @@ interface TaskCardProps {
     isAdmin: boolean;
     onComplete: (taskId: string) => void;
     onOverride: (taskId: string) => void;
+    onRemind?: (taskId: string) => Promise<void>;
 }
 
 const AVATAR_COLORS = ['#7c6aef', '#34d399', '#f97316', '#3b82f6', '#ec4899', '#eab308'];
 
 export default function TaskCard({
-    task, members, currentUserUid, isAdmin, onComplete, onOverride,
+    task, members, currentUserUid, isAdmin, onComplete, onOverride, onRemind
 }: TaskCardProps) {
     const [completing, setCompleting] = useState(false);
+    const [reminding, setReminding] = useState(false);
     const [showRotation, setShowRotation] = useState(false);
 
     const assigneeUid = getCurrentAssigneeUid(task);
@@ -150,6 +152,20 @@ export default function TaskCard({
                 >
                     {completing ? '✅ Done!' : canComplete ? '✓ Mark Done' : `🔒 ${assignee?.displayName || 'Assigned'}'s task`}
                 </button>
+                {onRemind && !isMyTurn && urgency === 'manual' && (
+                    <button
+                        className="btnGhost"
+                        style={{ padding: '6px 12px', fontSize: '0.8rem', flex: 1 }}
+                        onClick={async () => {
+                            setReminding(true);
+                            await onRemind(task.id);
+                            setTimeout(() => setReminding(false), 2000);
+                        }}
+                        disabled={task.manualReminderSent || reminding}
+                    >
+                        {task.manualReminderSent ? 'Reminded Today' : reminding ? 'Sent!' : '🔔 Remind'}
+                    </button>
+                )}
                 {isAdmin && (
                     <button className={styles.overrideBtn} onClick={() => onOverride(task.id)} title="Swap assignee (one-time)">
                         🔄

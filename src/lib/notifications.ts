@@ -1,5 +1,38 @@
+import { getMessaging, getToken } from 'firebase/messaging';
+import { getApp } from './firebase';
+
 export function isNotificationSupported(): boolean {
-    return typeof window !== 'undefined' && 'Notification' in window;
+    return typeof window !== 'undefined' && 'Notification' in window && 'serviceWorker' in navigator;
+}
+
+// Ensure the VAPID key is set in environment (used to authenticate push requests)
+const VAPID_KEY = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY || 'YOUR_VAPID_KEY_HERE';
+
+export async function requestFcmToken(): Promise<string | null> {
+    if (!isNotificationSupported()) return null;
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return null;
+
+    // Unregister any old/conflicting service workers that might be intercepting the request
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    for (const reg of registrations) {
+        if (!reg.active || !reg.active.scriptURL.includes('firebase-messaging-sw.js')) {
+            await reg.unregister();
+            console.log('Unregistered stale service worker:', reg);
+        }
+    }
+
+    // Explicitly register the custom FCM service worker
+    const swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+
+    const messaging = getMessaging(getApp());
+    const token = await getToken(messaging, {
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: swRegistration,
+    });
+
+    return token || null;
 }
 
 export async function requestNotificationPermission(): Promise<boolean> {
