@@ -152,7 +152,7 @@ export default function TaskCard({
                 >
                     {completing ? '✅ Done!' : canComplete ? '✓ Mark Done' : `🔒 ${assignee?.displayName || 'Assigned'}'s task`}
                 </button>
-                {onRemind && !isMyTurn && urgency === 'manual' && (
+                {onRemind && !isMyTurn && (urgency === 'manual' || urgency === 'due-today' || urgency === 'overdue') && (
                     <button
                         className="btnGhost"
                         style={{ padding: '6px 12px', fontSize: '0.8rem', flex: 1 }}
