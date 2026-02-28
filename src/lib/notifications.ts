@@ -1,4 +1,4 @@
-import { getMessaging, getToken } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { getApp } from './firebase';
 
 export function isNotificationSupported(): boolean {
@@ -58,4 +58,22 @@ export function notifyIfAssigned(
         `🎯 Your turn: ${taskName}`,
         `Hey ${assigneeName}, it's your turn! Open the app to mark it done.`
     );
+}
+
+export function listenForForegroundNotifications(onReceiveMessage: (title: string, body: string) => void) {
+    if (!isNotificationSupported()) return () => { };
+
+    try {
+        const messaging = getMessaging(getApp());
+        const unsubscribe = onMessage(messaging, (payload) => {
+            console.log('Foreground push received:', payload);
+            if (payload.notification) {
+                onReceiveMessage(payload.notification.title || 'New Notification', payload.notification.body || '');
+            }
+        });
+        return unsubscribe;
+    } catch (err) {
+        console.error('Error setting up foreground listener:', err);
+        return () => { };
+    }
 }
