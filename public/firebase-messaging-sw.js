@@ -6,10 +6,10 @@ importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-comp
 // (We get this automatically from the Next.js process via URL params or hardcoding,
 // but for standard FCM, it's safer to pass the sender ID)
 firebase.initializeApp({
-    apiKey: 'AIzaSyBTzuPdNUjpQ875PSwWbIP-zbYLF85Nnjo',
-    projectId: 'roommatestasker',
-    messagingSenderId: '66436052314',
-    appId: '1:66436052314:web:df1e57385657194f032f63',
+    apiKey: 'YOUR_FIREBASE_API_KEY_HERE',
+    projectId: 'YOUR_FIREBASE_PROJECT_ID_HERE',
+    messagingSenderId: 'YOUR_FIREBASE_MESSAGING_SENDER_ID_HERE',
+    appId: 'YOUR_FIREBASE_APP_ID_HERE',
 });
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
