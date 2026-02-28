@@ -73,30 +73,6 @@ export default function SettingsPage() {
         }
     };
 
-    const handleTestPush = async () => {
-        if (!houseId || !data) return;
-        const member = data.members.find((m) => m.uid === user.uid);
-        if (!member || !member.fcmTokens || member.fcmTokens.length === 0) {
-            showToast('⚠️ Please enable notifications first');
-            return;
-        }
-
-        try {
-            showToast('⏳ Sending test push...');
-            await fetch('/api/notifications/trigger', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    targetTokens: member.fcmTokens,
-                    title: `🧪 Test Notification`,
-                    message: `Push notifications are working perfectly on this device!`,
-                }),
-            });
-            showToast('✅ Test push sent! Check your notification bar.');
-        } catch {
-            showToast('⚠️ Failed to send test push');
-        }
-    };
 
     const handleSignOut = async () => {
         await signOut();
@@ -168,15 +144,7 @@ export default function SettingsPage() {
             <div className="section">
                 <h2 className="sectionTitle">Notifications</h2>
                 {notifStatus === 'granted' ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <p className={styles.statusGood}>✅ App push notifications active</p>
-                        <button className="btnGhost" onClick={handleEnableNotif} style={{ borderColor: 'var(--border)' }}>
-                            🔄 Refresh Device Registration
-                        </button>
-                        <button className="btnSecondary" onClick={handleTestPush}>
-                            🧪 Test Notification Delivery
-                        </button>
-                    </div>
+                    <p className={styles.statusGood}>✅ App push notifications active</p>
                 ) : notifStatus === 'denied' ? (
                     <p className={styles.statusWarn}>🚫 Blocked — enable in device settings</p>
                 ) : notifStatus === 'unsupported' ? (
