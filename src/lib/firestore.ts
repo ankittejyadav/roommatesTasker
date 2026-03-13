@@ -243,23 +243,22 @@ export async function completeTaskInFirestore(
         if (rotation.length === 0) return { ...task, lastCompletedDate: now, lastCompletedBy: completedByName };
 
         const originalAssigneeUid = rotation[task.currentIndex % rotation.length];
+        const isHelper = completedByUid !== originalAssigneeUid && rotation.includes(completedByUid);
         
         // Reorder rotation:
-        // 1. Remove both original assignee and the person who actually did it (if they were in rotation)
-        // 2. Append the person who did it (if they were in rotation)
-        // 3. Append the original (skipped) person at the absolute end
-        let newRotation = rotation.filter(uid => uid !== originalAssigneeUid && uid !== completedByUid);
-        
-        const wasInRotation = rotation.includes(completedByUid);
-        if (wasInRotation && completedByUid !== originalAssigneeUid) {
-            newRotation.push(completedByUid);
+        let newRotation: string[];
+        if (isHelper) {
+            // Helper Case: Helper moves to end, Original stays at front
+            newRotation = [...rotation.filter(uid => uid !== completedByUid), completedByUid];
+        } else {
+            // Normal Case: Original moves to end
+            newRotation = [...rotation.filter(uid => uid !== originalAssigneeUid), originalAssigneeUid];
         }
-        newRotation.push(originalAssigneeUid);
 
         return {
             ...task,
             rotation: newRotation,
-            currentIndex: 0, // Reset to 0 since we've shifted the rotation
+            currentIndex: 0, // Reset to 0 since we've reordered the array
             lastCompletedDate: now,
             lastCompletedBy: completedByName,
             temporarySwap: null,
