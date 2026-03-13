@@ -239,15 +239,31 @@ export async function completeTaskInFirestore(
         if (task.id !== taskId) return task;
 
         const now = new Date().toISOString();
-        const nextIndex = (task.currentIndex + 1) % task.rotation.length;
+        const rotation = task.rotation;
+        if (rotation.length === 0) return { ...task, lastCompletedDate: now, lastCompletedBy: completedByName };
+
+        const originalAssigneeUid = rotation[task.currentIndex % rotation.length];
+        
+        // Reorder rotation:
+        // 1. Remove both original assignee and the person who actually did it (if they were in rotation)
+        // 2. Append the person who did it (if they were in rotation)
+        // 3. Append the original (skipped) person at the absolute end
+        let newRotation = rotation.filter(uid => uid !== originalAssigneeUid && uid !== completedByUid);
+        
+        const wasInRotation = rotation.includes(completedByUid);
+        if (wasInRotation && completedByUid !== originalAssigneeUid) {
+            newRotation.push(completedByUid);
+        }
+        newRotation.push(originalAssigneeUid);
 
         return {
             ...task,
-            currentIndex: nextIndex,
+            rotation: newRotation,
+            currentIndex: 0, // Reset to 0 since we've shifted the rotation
             lastCompletedDate: now,
             lastCompletedBy: completedByName,
-            temporarySwap: null, // clear one-time swap
-            manualReminderSent: false, // reset manual reminder
+            temporarySwap: null,
+            manualReminderSent: false,
             history: [
                 { uid: completedByUid, name: completedByName, date: now },
                 ...task.history.slice(0, 49),

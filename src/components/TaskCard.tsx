@@ -39,7 +39,7 @@ export default function TaskCard({
     const upcoming = getUpcomingRotation(task, members, 6);
     const isSwapped = task.temporarySwap !== null;
 
-    const canComplete = isMyTurn; // only assigned user can mark done
+    const canComplete = isMyTurn || isAdmin; // assigned user OR admin can mark done
 
     const handleComplete = () => {
         if (!canComplete) return;
@@ -148,9 +148,9 @@ export default function TaskCard({
                     className={`${styles.doneBtn} ${completing ? styles.doneBtnActive : ''} ${!canComplete ? styles.doneBtnDisabled : ''}`}
                     onClick={handleComplete}
                     disabled={!canComplete || completing}
-                    title={!canComplete ? `Only ${assignee?.displayName || 'the assigned person'} can mark this done` : ''}
+                    title={!canComplete ? `Only ${assignee?.displayName || 'the assigned person'} can mark this done` : isAdmin ? 'Admin override: Mark this task as done' : ''}
                 >
-                    {completing ? '✅ Done!' : canComplete ? '✓ Mark Done' : `🔒 ${assignee?.displayName || 'Assigned'}'s task`}
+                    {completing ? '✅ Done!' : isMyTurn ? '✓ Mark Done' : isAdmin ? '⚡ Admin Mark Done' : `🔒 ${assignee?.displayName || 'Assigned'}'s task`}
                 </button>
                 {onRemind && !isMyTurn && (urgency === 'manual' || urgency === 'due-today' || urgency === 'overdue') && (
                     <button
