@@ -85,13 +85,35 @@ export default function DashboardPage() {
 
   const handleComplete = useCallback(async (taskId: string) => {
     if (!houseId || !data || !user) return;
-    const completedByName = getMemberByUid(data.members, user.uid)?.displayName || user.displayName || 'Unknown';
-    await completeTaskInFirestore(houseId, taskId, data, user.uid, completedByName);
 
     const task = data.tasks.find((t) => t.id === taskId);
-    if (task) {
-      const nextIdx = (task.currentIndex + 1) % task.rotation.length;
-      const nextUid = task.rotation[nextIdx];
+    if (!task) return;
+
+    const assigneeUid = getCurrentAssigneeUid(task);
+    const isAdmin = data.adminUid === user.uid;
+    
+    // Credit the original assignee if Admin is marking done for them
+    const creditUid = (isAdmin && assigneeUid && assigneeUid !== user.uid) ? assigneeUid : user.uid;
+    const creditMember = getMemberByUid(data.members, creditUid);
+    const completedByName = creditMember?.displayName || 'Unknown';
+
+    await completeTaskInFirestore(houseId, taskId, data, creditUid, completedByName);
+
+    if (task.rotation.length > 0) {
+      const originalAssigneeUid = task.rotation[task.currentIndex % task.rotation.length];
+      const isHelper = creditUid !== originalAssigneeUid && task.rotation.includes(creditUid);
+
+      let nextUid: string;
+      if (isHelper) {
+        // Helper case: Original stays at front (index 0 in new rotation)
+        const newRotation = [...task.rotation.filter(u => u !== creditUid), creditUid];
+        nextUid = newRotation[0];
+      } else {
+        // Normal case: Original moves to end, so index 0 is 1st item of filtered list
+        const newRotation = [...task.rotation.filter(u => u !== originalAssigneeUid), originalAssigneeUid];
+        nextUid = newRotation[0];
+      }
+
       const nextMember = getMemberByUid(data.members, nextUid);
       if (nextMember) setToast(`✅ Done! ${nextMember.displayName} is next`);
     }
