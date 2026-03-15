@@ -8,7 +8,7 @@ import styles from './BottomNav.module.css';
 const navItems = [
     { href: '/', label: 'Home', icon: '⌂', activeIcon: '⌂' },
     { href: '/shopping', label: 'Shop', icon: '🛒', activeIcon: '🛒' },
-    { href: '/schedule', label: 'Schedule', icon: '📅', activeIcon: '📅' },
+    { href: '/personal', label: 'My Tasks', icon: '👤', activeIcon: '👤' },
     { href: '/feedback', label: 'Feedback', icon: '💬', activeIcon: '💬' },
     { href: '/settings', label: 'Settings', icon: '⚙', activeIcon: '⚙' },
 ];

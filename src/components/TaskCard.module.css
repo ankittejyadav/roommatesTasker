@@ -1,47 +1,35 @@
 .card {
-  background: var(--bg-surface-1);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 16px;
+  background: var(--bg-surface-0);
+  border: none;
+  border-radius: 16px;
+  padding: 18px 18px 18px 24px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
   transition: all var(--duration-md) var(--ease-out);
 }
 
 .card:hover {
-  border-color: var(--border-hover);
-  background: var(--bg-surface-2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
 }
 
-/* You turn glow */
-.myTurn {
-  border-color: var(--accent-border);
-  box-shadow: 0 0 0 1px var(--accent-border), 0 4px 24px var(--accent-glow);
-}
-
-/* Accent top bar */
+/* Accent left bar */
 .accent {
   position: absolute;
   top: 0;
+  bottom: 0;
   left: 0;
-  right: 0;
-  height: 2px;
+  width: 6px;
 }
 
-.urgOverdue {
-  background: var(--danger);
-}
+.urgOverdue { background: var(--danger); }
+.urgToday { background: var(--warning); }
+.urgUpcoming { background: var(--success); }
+.urgManual { background: var(--text-muted); }
 
-.urgToday {
-  background: var(--warning);
-}
-
-.urgUpcoming {
-  background: var(--success);
-}
-
-.urgManual {
-  background: var(--text-muted);
+.myTurn {
+  /* Custom accents for My Turn card can be added here if needed */
 }
 
 /* Header */
@@ -109,14 +97,13 @@
 }
 
 .yourTurn {
-  padding: 2px 8px;
-  border-radius: var(--r-full);
-  font-size: 0.62rem;
-  font-weight: 700;
-  background: var(--accent-bg);
-  color: var(--accent-soft);
-  letter-spacing: 0.04em;
+  margin-left: auto;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #D97706; /* Darker amber for legibility on white bg */
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  align-self: center;
 }
 
 .swapBadge {
@@ -349,6 +336,7 @@
 
 /* Celebrating */
 .celebrating {
+  background-color: #ECFDF5 !important; /* Pale green tint on complete */
   animation: celebrate 0.5s var(--ease-spring);
 }
 

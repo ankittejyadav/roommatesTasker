@@ -7,50 +7,50 @@
 
 :root {
   /* Surface elevation */
-  --bg-base: #08080e;
-  --bg-surface-0: #0e0e18;
-  --bg-surface-1: rgba(255, 255, 255, 0.03);
-  --bg-surface-2: rgba(255, 255, 255, 0.055);
-  --bg-surface-3: rgba(255, 255, 255, 0.08);
+  --bg-base: #F4F5F7;
+  --bg-surface-0: #FFFFFF;
+  --bg-surface-1: rgba(0, 0, 0, 0.02);
+  --bg-surface-2: rgba(0, 0, 0, 0.04);
+  --bg-surface-3: rgba(0, 0, 0, 0.06);
 
   /* Accent palette */
-  --accent: #7c6aef;
-  --accent-soft: #a99eff;
-  --accent-bg: rgba(124, 106, 239, 0.08);
-  --accent-border: rgba(124, 106, 239, 0.18);
-  --accent-glow: rgba(124, 106, 239, 0.15);
-  --gradient-primary: linear-gradient(135deg, #7c6aef 0%, #c084fc 100%);
-  --gradient-vivid: linear-gradient(135deg, #7c6aef 0%, #e879f9 50%, #f472b6 100%);
+  --accent: #334155;
+  --accent-soft: #475569;
+  --accent-bg: rgba(51, 65, 85, 0.05);
+  --accent-border: rgba(51, 65, 85, 0.1);
+  --accent-glow: rgba(51, 65, 85, 0.04);
+  --gradient-primary: linear-gradient(135deg, #334155 0%, #475569 100%);
+  --gradient-vivid: linear-gradient(135deg, #1E293B 0%, #334155 50%, #475569 100%);
 
-  /* Semantic */
-  --success: #34d399;
-  --success-bg: rgba(52, 211, 153, 0.08);
-  --success-border: rgba(52, 211, 153, 0.18);
-  --warning: #fbbf24;
-  --warning-bg: rgba(251, 191, 36, 0.08);
-  --warning-border: rgba(251, 191, 36, 0.18);
-  --danger: #f87171;
-  --danger-bg: rgba(248, 113, 113, 0.06);
-  --danger-border: rgba(248, 113, 113, 0.12);
-  --info: #60a5fa;
+  /* Semantic (Pastel & Soft) */
+  --success: #6EE7B7;
+  --success-bg: rgba(110, 231, 183, 0.15);
+  --success-border: rgba(110, 231, 183, 0.25);
+  --warning: #FCD34D;
+  --warning-bg: rgba(252, 211, 77, 0.15);
+  --warning-border: rgba(252, 211, 77, 0.25);
+  --danger: #FCA5A5;
+  --danger-bg: rgba(252, 165, 165, 0.15);
+  --danger-border: rgba(252, 165, 165, 0.25);
+  --info: #93C5FD;
 
   /* Text */
-  --text-primary: #f0eef8;
-  --text-secondary: #a8a5c0;
-  --text-muted: #5e5b78;
-  --text-inverse: #08080e;
+  --text-primary: #1E293B;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --text-inverse: #FFFFFF;
 
   /* Border */
-  --border: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(255, 255, 255, 0.12);
-  --border-active: rgba(124, 106, 239, 0.3);
+  --border: rgba(0, 0, 0, 0.06);
+  --border-hover: rgba(0, 0, 0, 0.1);
+  --border-active: rgba(51, 65, 85, 0.2);
 
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Layout */
   --page-px: 20px;
-  --page-max: 560px;
+  --page-max: 1200px;
   --nav-h: 64px;
 
   /* Radius */
@@ -94,32 +94,10 @@ body {
   overflow-x: hidden;
 }
 
-/* Ambient light effects */
+/* Ambient light effects disabled for clean light theme */
 body::before,
 body::after {
-  content: '';
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(180px);
-  opacity: 0.07;
-  z-index: -1;
-  pointer-events: none;
-}
-
-body::before {
-  width: 600px;
-  height: 600px;
-  background: #7c6aef;
-  top: -200px;
-  right: -160px;
-}
-
-body::after {
-  width: 450px;
-  height: 450px;
-  background: #34d399;
-  bottom: 50px;
-  left: -160px;
+  content: none;
 }
 
 a {
@@ -183,9 +161,9 @@ a:hover {
 
 /* ─── Card Grid ─── */
 .cardGrid {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
 }
 
 /* ─── Glass Card ─── */
@@ -395,7 +373,7 @@ a:hover {
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--bg-surface-3);
+  background: var(--bg-surface-0);
   color: var(--text-primary);
   padding: 12px 22px;
   border-radius: var(--r-full);
@@ -403,9 +381,9 @@ a:hover {
   font-size: 0.82rem;
   z-index: 200;
   animation: slideDown 0.35s var(--ease-spring), slideUp 0.3s ease 2.7s forwards;
-  border: 1px solid var(--border-hover);
+  border: 1px solid var(--border);
   backdrop-filter: blur(16px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   max-width: calc(100vw - 32px);
   text-align: center;
   letter-spacing: -0.01em;

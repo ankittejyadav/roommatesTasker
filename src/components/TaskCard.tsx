@@ -77,10 +77,10 @@ export default function TaskCard({
                     <h3 className={styles.name}>{task.name}</h3>
                     <div className={styles.meta}>
                         <span className={`${styles.badge} ${urg.cls}`}>{urg.label}</span>
-                        {isMyTurn && <span className={styles.yourTurn}>Your Turn</span>}
                         {isSwapped && <span className={styles.swapBadge}>Swapped</span>}
                     </div>
                 </div>
+                {isMyTurn && <span className={styles.yourTurn}>YOUR TURN</span>}
             </div>
 
             {/* Assignee row */}

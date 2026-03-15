@@ -1,0 +1,69 @@
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1E293B;
+  letter-spacing: -0.03em;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionHeader {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748B;
+  margin-bottom: 12px;
+  letter-spacing: 0.01em;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.completedCard {
+  background-color: #e6fdf0; /* Pale green bg */
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.checkCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #10B981; /* Solid green */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.completedInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.completedTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #065F46; /* Deep green text */
+  margin-bottom: 2px;
+}
+
+.completedSubtitle {
+  font-size: 0.75rem;
+  color: #047857; /* Medium green text */
+}
