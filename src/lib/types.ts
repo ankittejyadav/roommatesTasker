@@ -53,6 +53,15 @@ export interface ShoppingItem {
   createdAt: string;
 }
 
+export interface ChatMessage {
+  id: string;
+  text: string;
+  senderUid: string;
+  senderName: string;
+  senderPhoto: string | null;
+  createdAt: string; // ISO string
+}
+
 export interface HouseData {
   name: string;
   members: MemberProfile[];

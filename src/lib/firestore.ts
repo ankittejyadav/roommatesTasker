@@ -13,7 +13,7 @@ import {
     limit,
 } from 'firebase/firestore';
 import { getFirebaseDb } from './firebase';
-import { HouseData, MemberProfile, Task, DEFAULT_TASKS, FeedbackItem, ShoppingItem } from './types';
+import { HouseData, MemberProfile, Task, DEFAULT_TASKS, FeedbackItem, ShoppingItem, ChatMessage } from './types';
 
 const HOUSES = 'houses';
 
@@ -441,3 +441,57 @@ export async function removeShoppingItem(
     const updated = (currentData.shoppingList || []).filter((s) => s.id !== itemId);
     await updateDoc(doc(getFirebaseDb(), HOUSES, houseId), { shoppingList: updated });
 }
+
+// ───────────────────────── Chat ─────────────────────────
+
+export async function sendChatMessage(
+    houseId: string,
+    text: string,
+    senderUid: string,
+    senderName: string,
+    senderPhoto: string | null
+): Promise<void> {
+    const db = getFirebaseDb();
+    const messagesRef = collection(db, HOUSES, houseId, 'messages');
+    
+    const message: ChatMessage = {
+        id: generateId(),
+        text,
+        senderUid,
+        senderName,
+        senderPhoto,
+        createdAt: new Date().toISOString(),
+    };
+
+    await setDoc(doc(messagesRef, message.id), message);
+}
+
+export function subscribeToChatMessages(
+    houseId: string,
+    callback: (messages: ChatMessage[]) => void,
+    onError?: (error: Error) => void
+): Unsubscribe {
+    const db = getFirebaseDb();
+    const messagesRef = collection(db, HOUSES, houseId, 'messages');
+    // We order by createdAt. Ascending means oldest first, meaning bottom of list is newest.
+    const q = query(messagesRef, orderBy('createdAt', 'asc'), limit(150));
+
+    return onSnapshot(q, (snapshot) => {
+        const messages: ChatMessage[] = [];
+        snapshot.forEach((doc) => {
+            messages.push(doc.data() as ChatMessage);
+        });
+        callback(messages);
+    }, onError);
+}
+
+export async function deleteChatMessage(
+    houseId: string,
+    messageId: string
+): Promise<void> {
+    const { deleteDoc } = await import('firebase/firestore');
+    const db = getFirebaseDb();
+    const messageDocRef = doc(db, HOUSES, houseId, 'messages', messageId);
+    await deleteDoc(messageDocRef);
+}
+

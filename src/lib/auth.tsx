@@ -13,6 +13,7 @@ import {
     signOut as firebaseSignOut,
     onAuthStateChanged,
     User,
+    updateProfile,
 } from 'firebase/auth';
 import { getFirebaseAuth } from './firebase';
 
@@ -21,6 +22,7 @@ interface AuthContextType {
     loading: boolean;
     signInWithGoogle: () => Promise<void>;
     signOut: () => Promise<void>;
+    updateUserProfile: (updates: { displayName?: string; photoURL?: string }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -28,6 +30,7 @@ const AuthContext = createContext<AuthContextType>({
     loading: true,
     signInWithGoogle: async () => { },
     signOut: async () => { },
+    updateUserProfile: async () => { },
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -51,8 +54,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await firebaseSignOut(getFirebaseAuth());
     };
 
+    const updateUserProfile = async (updates: { displayName?: string; photoURL?: string }) => {
+        const currentUser = getFirebaseAuth().currentUser;
+        if (currentUser) {
+            await updateProfile(currentUser, updates);
+            // Reload user to get latest profile
+            await currentUser.reload();
+            // Update state with a copy/fresh user object to trigger re-renders
+            setUser(getFirebaseAuth().currentUser);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut }}>
+        <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut, updateUserProfile }}>
             {children}
         </AuthContext.Provider>
     );

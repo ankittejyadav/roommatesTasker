@@ -5,18 +5,24 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { HouseData } from '@/lib/types';
-import { findHouseByUser, subscribeToHouse, saveFcmToken } from '@/lib/firestore';
+import { findHouseByUser, subscribeToHouse, saveFcmToken, updateMemberProfile } from '@/lib/firestore';
 import { requestFcmToken, isNotificationSupported } from '@/lib/notifications';
 import styles from './settings.module.css';
 
 export default function SettingsPage() {
-    const { user, loading: authLoading, signOut } = useAuth();
+    const { user, loading: authLoading, signOut, updateUserProfile } = useAuth();
     const router = useRouter();
     const [houseId, setHouseId] = useState<string | null>(null);
     const [data, setData] = useState<HouseData | null>(null);
     const [loading, setLoading] = useState(true);
     const [notifStatus, setNotifStatus] = useState<string>('unknown');
     const [toast, setToast] = useState<string | null>(null);
+    const [isEditingName, setIsEditingName] = useState(false);
+    const [newName, setNewName] = useState(user?.displayName || '');
+
+    useEffect(() => {
+        if (user?.displayName) setNewName(user.displayName);
+    }, [user]);
 
     useEffect(() => {
         if (authLoading) return;
@@ -66,13 +72,35 @@ export default function SettingsPage() {
                 setNotifStatus(Notification.permission === 'denied' ? 'denied' : 'unknown');
                 if (Notification.permission === 'default') showToast('Notification permission was dismissed');
             }
-        } catch (err: any) {
-            console.error('FCM Token Error:', err);
+        } catch (err) {
+            const error = err instanceof Error ? err : new Error(String(err));
+            console.error('FCM Token Error:', error);
             setNotifStatus('unknown');
-            showToast(`⚠️ Error: ${err.message?.substring(0, 50) || 'Failed to get token'}`);
+            showToast(`⚠️ Error: ${error.message.substring(0, 50) || 'Failed to get token'}`);
         }
     };
 
+
+    const handleSaveName = async () => {
+        if (!newName.trim()) return;
+        try {
+            setLoading(true);
+            if (updateUserProfile) {
+                await updateUserProfile({ displayName: newName });
+            }
+            if (houseId && data && user) {
+                await updateMemberProfile(houseId, data, user.uid, { displayName: newName });
+            }
+            setIsEditingName(false);
+            showToast('✅ Name updated successfully!');
+        } catch (err) {
+            const error = err instanceof Error ? err : new Error(String(err));
+            console.error('Update Name Error:', error);
+            showToast(`⚠️ Error: ${error.message || 'Failed to update name'}`);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleSignOut = async () => {
         await signOut();
@@ -98,9 +126,29 @@ export default function SettingsPage() {
                                 <img src={user.photoURL} alt={user.displayName || ''} referrerPolicy="no-referrer" />
                             ) : (user.displayName || 'U')[0].toUpperCase()}
                         </div>
-                        <div className={styles.profileInfo}>
-                            <span className={styles.profileName}>{user.displayName}</span>
-                            <span className={styles.profileEmail}>{user.email}</span>
+                        <div style={{ flex: 1 }}>
+                            {isEditingName ? (
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                    <input
+                                        type="text"
+                                        value={newName}
+                                        onChange={(e) => setNewName(e.target.value)}
+                                        className="inputField"
+                                        style={{ padding: '6px 10px', fontSize: '0.88rem', flex: 1 }}
+                                        placeholder="Enter name"
+                                    />
+                                    <button className="btnPrimary btnSmall" onClick={handleSaveName} disabled={loading} style={{ width: 'auto', minHeight: 'auto' }}>Save</button>
+                                    <button className="btnSecondary btnSmall" onClick={() => { setIsEditingName(false); setNewName(user.displayName || ''); }} style={{ width: 'auto' }}>Cancel</button>
+                                </div>
+                            ) : (
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <div className={styles.profileInfo}>
+                                        <span className={styles.profileName}>{user.displayName}</span>
+                                        <span className={styles.profileEmail}>{user.email}</span>
+                                    </div>
+                                    <button className="btnGhost btnSmall" onClick={() => setIsEditingName(true)}>✏️ Edit</button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
