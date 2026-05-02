@@ -340,6 +340,39 @@ export async function updateHouseName(houseId: string, name: string): Promise<vo
     await updateDoc(doc(getFirebaseDb(), HOUSES, houseId), { name });
 }
 
+export async function addTask(
+    houseId: string,
+    currentData: HouseData,
+    name: string,
+    icon: string,
+    frequencyDays: number | null
+): Promise<void> {
+    const newTask: Task = {
+        id: generateId(),
+        name,
+        icon,
+        rotation: currentData.members.map((m) => m.uid),
+        currentIndex: 0,
+        frequencyDays,
+        lastCompletedDate: null,
+        lastCompletedBy: null,
+        history: [],
+        temporarySwap: null,
+    };
+    await updateDoc(doc(getFirebaseDb(), HOUSES, houseId), {
+        tasks: [...currentData.tasks, newTask],
+    });
+}
+
+export async function deleteTask(
+    houseId: string,
+    currentData: HouseData,
+    taskId: string
+): Promise<void> {
+    const updatedTasks = currentData.tasks.filter((t) => t.id !== taskId);
+    await updateDoc(doc(getFirebaseDb(), HOUSES, houseId), { tasks: updatedTasks });
+}
+
 // ───────────────────────── Feedback ─────────────────────────
 
 export async function addFeedback(

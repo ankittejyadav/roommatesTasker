@@ -9,6 +9,8 @@ import {
     updateTaskFrequency,
     updateHouseName,
     removeMemberFromHouse,
+    addTask,
+    deleteTask,
 } from '@/lib/firestore';
 import styles from './admin.module.css';
 
@@ -24,6 +26,13 @@ export default function AdminPage() {
     const [editingName, setEditingName] = useState(false);
     const [newName, setNewName] = useState('');
     const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
+    const [confirmDeleteTask, setConfirmDeleteTask] = useState<string | null>(null);
+    const [showAddTask, setShowAddTask] = useState(false);
+    const [newTaskName, setNewTaskName] = useState('');
+    const [newTaskIcon, setNewTaskIcon] = useState('');
+    const [newTaskFreq, setNewTaskFreq] = useState<string>('7');
+    const [newTaskNoFreq, setNewTaskNoFreq] = useState(false);
+    const [addingTask, setAddingTask] = useState(false);
 
     useEffect(() => {
         if (authLoading) return;
@@ -79,6 +88,35 @@ export default function AdminPage() {
     const handleFrequencyChange = async (taskId: string, days: number) => {
         await updateTaskFrequency(houseId, taskId, data, days);
         showToast('✅ Frequency updated');
+    };
+
+    const handleAddTask = async () => {
+        if (!newTaskName.trim()) return;
+        setAddingTask(true);
+        try {
+            const freq = newTaskNoFreq ? null : (parseInt(newTaskFreq) || 7);
+            await addTask(houseId, data, newTaskName.trim(), newTaskIcon.trim() || '📋', freq);
+            setNewTaskName('');
+            setNewTaskIcon('');
+            setNewTaskFreq('7');
+            setNewTaskNoFreq(false);
+            setShowAddTask(false);
+            showToast('✅ Task added');
+        } catch {
+            showToast('❌ Failed to add task');
+        } finally {
+            setAddingTask(false);
+        }
+    };
+
+    const handleDeleteTask = async (taskId: string) => {
+        try {
+            await deleteTask(houseId, data, taskId);
+            setConfirmDeleteTask(null);
+            showToast('✅ Task deleted');
+        } catch {
+            showToast('❌ Failed to delete task');
+        }
     };
 
     return (
@@ -149,9 +187,66 @@ export default function AdminPage() {
 
             <hr className="divider" />
 
+            <div className="section">
+                <div className={styles.tasksSectionHeader}>
+                    <h2 className="sectionTitle" style={{ marginBottom: 0 }}>Chore Tasks</h2>
+                    <button className={styles.addTaskBtn} onClick={() => setShowAddTask((v) => !v)}>
+                        {showAddTask ? '✕ Cancel' : '+ Add Task'}
+                    </button>
+                </div>
+
+                {showAddTask && (
+                    <div className={styles.addTaskForm}>
+                        <div className={styles.addTaskRow}>
+                            <input
+                                className={`inputField ${styles.iconInput}`}
+                                placeholder="Icon (emoji)"
+                                value={newTaskIcon}
+                                onChange={(e) => setNewTaskIcon(e.target.value)}
+                                maxLength={4}
+                            />
+                            <input
+                                className={`inputField ${styles.nameInput}`}
+                                placeholder="Task name (e.g. Mop Floor)"
+                                value={newTaskName}
+                                onChange={(e) => setNewTaskName(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
+                            />
+                        </div>
+                        <div className={styles.addTaskFreqRow}>
+                            <label className={styles.freqLabel}>Frequency</label>
+                            {!newTaskNoFreq && (
+                                <>
+                                    <button className={styles.freqBtn} onClick={() => setNewTaskFreq(String(Math.max(1, (parseInt(newTaskFreq) || 7) - 1)))}>−</button>
+                                    <span className={styles.freqValue}>{newTaskFreq} days</span>
+                                    <button className={styles.freqBtn} onClick={() => setNewTaskFreq(String((parseInt(newTaskFreq) || 7) + 1))}>+</button>
+                                </>
+                            )}
+                            <label className={styles.noFreqLabel}>
+                                <input type="checkbox" checked={newTaskNoFreq} onChange={(e) => setNewTaskNoFreq(e.target.checked)} />
+                                On completion only
+                            </label>
+                        </div>
+                        <button className="btnPrimary btnSmall" onClick={handleAddTask} disabled={!newTaskName.trim() || addingTask}>
+                            {addingTask ? 'Adding…' : 'Add Task'}
+                        </button>
+                    </div>
+                )}
+            </div>
+
             {data.tasks.map((task) => (
                 <div key={task.id} className="section">
-                    <h2 className="sectionTitle">{task.icon} {task.name}</h2>
+                    <div className={styles.taskHeader}>
+                        <h2 className="sectionTitle" style={{ marginBottom: 0 }}>{task.icon} {task.name}</h2>
+                        {confirmDeleteTask === task.id ? (
+                            <div className={styles.confirmActions}>
+                                <button className={styles.confirmYes} onClick={() => handleDeleteTask(task.id)}>Delete</button>
+                                <button className={styles.confirmNo} onClick={() => setConfirmDeleteTask(null)}>Cancel</button>
+                            </div>
+                        ) : (
+                            <button className={styles.removeBtn} title="Delete task" onClick={() => setConfirmDeleteTask(task.id)}>🗑</button>
+                        )}
+                    </div>
 
                     {task.frequencyDays !== null && (
                         <div className={styles.freqRow}>
