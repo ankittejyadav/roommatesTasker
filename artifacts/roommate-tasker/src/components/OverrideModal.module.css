@@ -1,0 +1,139 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    z-index: 150;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal {
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg-surface-0);
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+    padding: 24px 20px;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.header {
+    margin-bottom: 16px;
+}
+
+.title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.memberBtn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+    width: 100%;
+    text-align: left;
+}
+
+.memberBtn:hover {
+    background: var(--bg-surface-2);
+    border-color: var(--border-hover);
+}
+
+.memberAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-sm);
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.72rem;
+    color: white;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.memberAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.memberName {
+    flex: 1;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.arrow {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.closeBtn {
+    width: 100%;
+    margin-top: 14px;
+    padding: 12px;
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: all 0.15s ease;
+}
+
+.closeBtn:hover {
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+}

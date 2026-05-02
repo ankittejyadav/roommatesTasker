@@ -1,0 +1,91 @@
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.filterBtn {
+    padding: 6px 12px;
+    border-radius: var(--r-full);
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: all 0.15s ease;
+}
+
+.filterBtn:hover {
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+}
+
+.filterActive {
+    background: var(--accent-bg);
+    border-color: var(--accent-border);
+    color: var(--accent-soft);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 6px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s ease;
+}
+
+.entry:hover {
+    background: var(--bg-surface-1);
+}
+
+.entry:last-child {
+    border-bottom: none;
+}
+
+.entryDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+}
+
+.entryContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.entryTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.entryTask {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.entryDate {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.entryName {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}

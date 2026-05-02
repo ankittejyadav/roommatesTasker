@@ -1,0 +1,298 @@
+.editRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.editRow .inputField {
+    flex: 1;
+}
+
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.infoRow:last-child {
+    border-bottom: none;
+}
+
+.infoLabel {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.infoValue {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.inviteCode {
+    font-family: monospace;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--accent-soft);
+    letter-spacing: 0.15em;
+    background: var(--accent-bg);
+    padding: 4px 10px;
+    border-radius: var(--r-sm);
+}
+
+/* Members */
+.membersList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.memberCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    transition: all 0.15s ease;
+}
+
+.memberCard:hover {
+    background: var(--bg-surface-2);
+}
+
+.memberLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.memberAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.72rem;
+    color: white;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.memberAvatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.memberInfo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.memberName {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.memberEmail {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.adminBadge {
+    font-size: 0.58rem;
+    font-weight: 700;
+    background: var(--accent-bg);
+    color: var(--accent-soft);
+    padding: 1px 6px;
+    border-radius: var(--r-full);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.removeBtn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--r-sm);
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.removeBtn:hover {
+    color: var(--danger);
+    background: var(--danger-bg);
+    border-color: var(--danger-border);
+}
+
+.confirmActions {
+    display: flex;
+    gap: 6px;
+}
+
+.confirmYes {
+    padding: 5px 10px;
+    border-radius: var(--r-sm);
+    background: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    color: var(--danger);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font-sans);
+}
+
+.confirmNo {
+    padding: 5px 10px;
+    border-radius: var(--r-sm);
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-sans);
+}
+
+/* Frequency */
+.freqRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    margin-bottom: 12px;
+}
+
+.freqLabel {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.freqValue {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    min-width: 60px;
+    text-align: center;
+}
+
+.freqBtn {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--r-sm);
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    font-family: var(--font-sans);
+}
+
+.freqBtn:hover {
+    background: var(--bg-surface-3);
+    border-color: var(--border-hover);
+}
+
+.note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    font-style: italic;
+}
+
+/* Chip-based rotation */
+.chipGrid {
+    margin-top: 4px;
+}
+
+.chipLabel {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: var(--r-full);
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: var(--font-sans);
+    user-select: none;
+}
+
+.chip:hover {
+    background: var(--bg-surface-2);
+    border-color: var(--border-hover);
+}
+
+.chipActive {
+    background: var(--accent-bg);
+    border-color: var(--accent-border);
+    color: var(--accent-soft);
+}
+
+.chipDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.chipPos {
+    font-size: 0.62rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 1px 5px;
+    border-radius: var(--r-full);
+    color: var(--text-muted);
+}

@@ -1,0 +1,77 @@
+.nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(8, 8, 14, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.inner {
+    max-width: 560px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: var(--nav-h, 64px);
+    padding: 0 4px;
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 0;
+    min-width: 52px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text-muted);
+    transition: color 0.15s ease;
+    position: relative;
+}
+
+.item:hover {
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.icon {
+    font-size: 1.15rem;
+    line-height: 1;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+}
+
+.active {
+    color: var(--accent-soft);
+}
+
+.active .icon {
+    color: var(--accent);
+}
+
+.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 0 0 2px 2px;
+}
