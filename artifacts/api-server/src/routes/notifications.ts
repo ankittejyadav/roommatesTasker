@@ -67,7 +67,16 @@ router.post("/notifications/trigger", async (req, res) => {
   }
 });
 
-router.get("/cron/reminders", async (_req, res) => {
+router.get("/cron/reminders", async (req, res) => {
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret) {
+    const authHeader = req.headers["authorization"];
+    if (!authHeader || authHeader !== `Bearer ${cronSecret}`) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+  }
+
   try {
     const adminSdk = getAdmin();
     if (!adminSdk.apps.length) {
