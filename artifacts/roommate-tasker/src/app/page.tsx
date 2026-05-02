@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/lib/auth';
 import { HouseData } from '@/lib/types';
@@ -72,12 +72,15 @@ export default function DashboardPage() {
     return () => { if (unsub) unsub(); };
   }, [user, authLoading]);
 
+  const switchHouseUnsubRef = useRef<(() => void) | null>(null);
+
   const switchHouse = useCallback((newHouseId: string) => {
     setLoading(true);
     setHouseId(newHouseId);
     setShowHousePicker(false);
-    const unsub = subscribeToHouse(newHouseId, (d) => { setData(d); setLoading(false); });
-    return unsub;
+    // Unsubscribe previous house listener before creating a new one
+    if (switchHouseUnsubRef.current) switchHouseUnsubRef.current();
+    switchHouseUnsubRef.current = subscribeToHouse(newHouseId, (d) => { setData(d); setLoading(false); });
   }, []);
 
   const handleComplete = useCallback(async (taskId: string) => {
