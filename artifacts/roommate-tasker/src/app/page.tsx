@@ -145,11 +145,7 @@ export default function DashboardPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${idToken}`,
         },
-        body: JSON.stringify({
-          targetTokens: member.fcmTokens,
-          title: `🔔 Reminder: ${task.name}`,
-          message: `It's your turn to do the ${task.name}.`,
-        }),
+        body: JSON.stringify({ houseId, taskId }),
       });
 
       await triggerManualReminder(houseId, taskId, data);

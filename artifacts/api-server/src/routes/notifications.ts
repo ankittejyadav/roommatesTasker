@@ -27,46 +27,94 @@ function getAdmin() {
   return admin;
 }
 
-router.post("/notifications/trigger", async (req, res) => {
-  const authHeader = req.headers["authorization"];
+async function verifyFirebaseToken(authHeader: string | undefined): Promise<admin.auth.DecodedIdToken | null> {
   const idToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  if (!idToken) {
-    res.status(401).json({ error: "Missing Authorization header" });
-    return;
-  }
+  if (!idToken) return null;
+  const adminSdk = getAdmin();
+  if (!adminSdk.apps.length) return null;
   try {
-    const adminSdkForAuth = getAdmin();
-    if (adminSdkForAuth.apps.length) {
-      await adminSdkForAuth.auth().verifyIdToken(idToken);
-    }
+    return await adminSdk.auth().verifyIdToken(idToken);
   } catch {
-    res.status(401).json({ error: "Invalid or expired token" });
+    return null;
+  }
+}
+
+/**
+ * POST /api/notifications/trigger
+ * Body: { houseId: string, taskId: string }
+ * Auth: Firebase ID token (Bearer)
+ *
+ * Derives FCM tokens server-side from Firestore. The caller only supplies
+ * house + task context; the server validates membership and resolves tokens.
+ */
+router.post("/notifications/trigger", async (req, res) => {
+  const decoded = await verifyFirebaseToken(req.headers["authorization"]);
+  if (!decoded) {
+    res.status(401).json({ error: "Unauthorized" });
     return;
   }
 
-  const { targetTokens, title, message } = req.body as {
-    targetTokens: string[];
-    title: string;
-    message: string;
-  };
+  const { houseId, taskId } = req.body as { houseId?: string; taskId?: string };
+  if (!houseId || !taskId) {
+    res.status(400).json({ error: "Missing houseId or taskId" });
+    return;
+  }
 
-  if (!targetTokens?.length || !title || !message) {
-    res.status(400).json({ error: "Missing targetTokens, title, or message" });
+  const adminSdk = getAdmin();
+  if (!adminSdk.apps.length) {
+    res.status(503).json({ error: "Firebase Admin not initialized" });
     return;
   }
 
   try {
-    const adminSdk = getAdmin();
-    if (!adminSdk.apps.length) {
-      res.status(503).json({ error: "Firebase Admin not initialized" });
+    const db = adminSdk.firestore();
+    const houseDoc = await db.collection("houses").doc(houseId).get();
+    if (!houseDoc.exists) {
+      res.status(404).json({ error: "House not found" });
       return;
     }
+
+    const house = houseDoc.data()!;
+    const members: Array<{ uid: string; fcmTokens?: string[] }> = house.members || [];
+
+    // Verify caller is a member of the house
+    const callerUid = decoded.uid;
+    const isMember = members.some((m) => m.uid === callerUid);
+    if (!isMember) {
+      res.status(403).json({ error: "Forbidden: not a member of this house" });
+      return;
+    }
+
+    const tasks: Array<{ id: string; name: string; rotation: string[]; currentIndex: number }> = house.tasks || [];
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) {
+      res.status(404).json({ error: "Task not found" });
+      return;
+    }
+
+    // Derive current assignee from server-side rotation
+    const rotation = task.rotation || [];
+    if (rotation.length === 0) {
+      res.status(422).json({ error: "Task has no rotation members" });
+      return;
+    }
+    const assigneeUid = rotation[task.currentIndex % rotation.length];
+    const assignee = members.find((m) => m.uid === assigneeUid);
+    const targetTokens = assignee?.fcmTokens ?? [];
+
+    if (targetTokens.length === 0) {
+      res.json({ sent: 0, failed: 0, reason: "Assignee has no FCM tokens" });
+      return;
+    }
+
+    const title = `🔔 Reminder: ${task.name}`;
+    const body = `It's your turn to do the ${task.name}. Open the app to mark it done.`;
 
     const results = await Promise.allSettled(
       targetTokens.map((token) =>
         adminSdk.messaging().send({
           token,
-          notification: { title, body: message },
+          notification: { title, body },
           android: { priority: "high" },
           apns: { payload: { aps: { sound: "default" } } },
         })
@@ -75,7 +123,7 @@ router.post("/notifications/trigger", async (req, res) => {
 
     const sent = results.filter((r) => r.status === "fulfilled").length;
     const failed = results.filter((r) => r.status === "rejected").length;
-    logger.info({ sent, failed }, "Notifications sent");
+    logger.info({ sent, failed, houseId, taskId }, "Notifications sent");
     res.json({ sent, failed });
   } catch (err) {
     logger.error({ err }, "Error sending notifications");
@@ -83,6 +131,10 @@ router.post("/notifications/trigger", async (req, res) => {
   }
 });
 
+/**
+ * GET /api/cron/reminders
+ * Auth: Bearer CRON_SECRET (fails closed in production if secret not set)
+ */
 router.get("/cron/reminders", async (req, res) => {
   const cronSecret = process.env.CRON_SECRET;
   if (process.env.NODE_ENV === "production" && !cronSecret) {
@@ -97,13 +149,13 @@ router.get("/cron/reminders", async (req, res) => {
     }
   }
 
-  try {
-    const adminSdk = getAdmin();
-    if (!adminSdk.apps.length) {
-      res.status(503).json({ error: "Firebase Admin not initialized" });
-      return;
-    }
+  const adminSdk = getAdmin();
+  if (!adminSdk.apps.length) {
+    res.status(503).json({ error: "Firebase Admin not initialized" });
+    return;
+  }
 
+  try {
     const db = adminSdk.firestore();
     const snapshot = await db.collection("houses").get();
     let sent = 0;
