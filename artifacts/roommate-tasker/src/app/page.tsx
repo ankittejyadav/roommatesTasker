@@ -142,7 +142,8 @@ export default function DashboardPage() {
 
     try {
       const idToken = await user.getIdToken();
-      await fetch('/api/notifications/trigger', {
+      const apiBase = (import.meta.env.VITE_API_URL ?? window.location.origin).replace(/\/$/, '');
+      await fetch(`${apiBase}/api/notifications/trigger`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
