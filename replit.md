@@ -43,6 +43,32 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - **Kind**: Express API
 - **Port**: 8080
 - **Routes**:
-  - `POST /api/notifications/trigger` — sends FCM push via firebase-admin
-  - `GET /api/cron/reminders` — sends overdue task reminders to all houses
-- **Firebase env vars**: `FIREBASE_SERVICE_ACCOUNT_KEY` (JSON string), `FIREBASE_PROJECT_ID`
+  - `POST /api/notifications/trigger` — sends FCM push via firebase-admin; requires `Authorization: Bearer <NOTIFY_SECRET>` in production
+  - `GET /api/cron/reminders` — sends overdue task reminders to all houses; requires `Authorization: Bearer <CRON_SECRET>` in production
+- **Firebase env vars**: `FIREBASE_SERVICE_ACCOUNT_KEY` (JSON string), `VITE_FIREBASE_PROJECT_ID`
+
+## Deployment Checklist
+
+Before deploying to production, ensure the following secrets are configured in Replit:
+
+### Required Firebase secrets (frontend + SW)
+| Secret | Description |
+|--------|-------------|
+| `VITE_FIREBASE_API_KEY` | Firebase project API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | e.g. `yourapp.firebaseapp.com` |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase project ID |
+| `VITE_FIREBASE_STORAGE_BUCKET` | e.g. `yourapp.firebasestorage.app` |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | FCM sender ID (numeric) |
+| `VITE_FIREBASE_APP_ID` | Firebase app ID |
+| `VITE_FIREBASE_VAPID_KEY` | Web push VAPID key (from Firebase Console → Cloud Messaging) |
+
+### Required server-side secrets
+| Secret | Description |
+|--------|-------------|
+| `FIREBASE_SERVICE_ACCOUNT_KEY` | Full JSON string of a Firebase service account key |
+| `NOTIFY_SECRET` | Shared secret to authorize `POST /api/notifications/trigger` |
+| `CRON_SECRET` | Shared secret to authorize `GET /api/cron/reminders` |
+
+### Required Firebase Console setup
+1. **Authorized Domains**: Add your Replit dev domain (`*.replit.dev`) and production domain (`*.replit.app`) under Firebase Console → Authentication → Settings → Authorized Domains so Google Sign-In works.
+2. **Service Worker**: `public/firebase-messaging-sw.js` is generated automatically at build/dev time from `src/firebase-messaging-sw.template.js` — do not edit the generated file directly.

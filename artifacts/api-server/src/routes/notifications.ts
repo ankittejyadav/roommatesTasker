@@ -29,6 +29,10 @@ function getAdmin() {
 
 router.post("/notifications/trigger", async (req, res) => {
   const notifySecret = process.env.NOTIFY_SECRET;
+  if (process.env.NODE_ENV === "production" && !notifySecret) {
+    res.status(503).json({ error: "NOTIFY_SECRET is not configured" });
+    return;
+  }
   if (notifySecret) {
     const authHeader = req.headers["authorization"];
     if (!authHeader || authHeader !== `Bearer ${notifySecret}`) {
@@ -78,6 +82,10 @@ router.post("/notifications/trigger", async (req, res) => {
 
 router.get("/cron/reminders", async (req, res) => {
   const cronSecret = process.env.CRON_SECRET;
+  if (process.env.NODE_ENV === "production" && !cronSecret) {
+    res.status(503).json({ error: "CRON_SECRET is not configured" });
+    return;
+  }
   if (cronSecret) {
     const authHeader = req.headers["authorization"];
     if (!authHeader || authHeader !== `Bearer ${cronSecret}`) {
