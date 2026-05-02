@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ── Fresh variant ── */
+.fresh-container {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+.fresh-scroll::-webkit-scrollbar { display: none; }
+.fresh-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Midnight variant ── */
+.bg-midnight-base { background-color: #0a0f1e; }
+.text-midnight-gold { color: #f59e0b; }
+.font-midnight { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; }
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glow-effect {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 0; display: none; }
+.custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
