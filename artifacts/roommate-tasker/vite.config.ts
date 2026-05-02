@@ -1,17 +1,49 @@
-import { defineConfig } from "vite";
+import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+import fs from "fs";
 
 const rawPort = process.env.PORT;
 const port = rawPort ? Number(rawPort) : 3000;
 
 const basePath = process.env.BASE_PATH ?? "/";
 
+function firebaseSwPlugin(): Plugin {
+  const swTemplatePath = path.resolve(
+    import.meta.dirname,
+    "src/firebase-messaging-sw.template.js",
+  );
+
+  return {
+    name: "firebase-sw-inject",
+    configResolved() {
+      function getEnv(key: string): string {
+        const raw = process.env[key] ?? "";
+        const eqIdx = raw.indexOf("=");
+        return eqIdx !== -1 ? raw.slice(eqIdx + 1) : raw;
+      }
+      const template = fs.readFileSync(swTemplatePath, "utf-8");
+      const filled = template
+        .replace("__VITE_FIREBASE_API_KEY__", getEnv("VITE_FIREBASE_API_KEY"))
+        .replace("__VITE_FIREBASE_AUTH_DOMAIN__", getEnv("VITE_FIREBASE_AUTH_DOMAIN"))
+        .replace("__VITE_FIREBASE_PROJECT_ID__", getEnv("VITE_FIREBASE_PROJECT_ID"))
+        .replace("__VITE_FIREBASE_STORAGE_BUCKET__", getEnv("VITE_FIREBASE_STORAGE_BUCKET"))
+        .replace("__VITE_FIREBASE_MESSAGING_SENDER_ID__", getEnv("VITE_FIREBASE_MESSAGING_SENDER_ID"))
+        .replace("__VITE_FIREBASE_APP_ID__", getEnv("VITE_FIREBASE_APP_ID"));
+
+      const outDir = path.resolve(import.meta.dirname, "public");
+      fs.mkdirSync(outDir, { recursive: true });
+      fs.writeFileSync(path.join(outDir, "firebase-messaging-sw.js"), filled, "utf-8");
+    },
+  };
+}
+
 export default defineConfig({
   base: basePath,
   plugins: [
+    firebaseSwPlugin(),
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),

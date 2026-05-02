@@ -28,6 +28,15 @@ function getAdmin() {
 }
 
 router.post("/notifications/trigger", async (req, res) => {
+  const notifySecret = process.env.NOTIFY_SECRET;
+  if (notifySecret) {
+    const authHeader = req.headers["authorization"];
+    if (!authHeader || authHeader !== `Bearer ${notifySecret}`) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+  }
+
   const { targetTokens, title, message } = req.body as {
     targetTokens: string[];
     title: string;
