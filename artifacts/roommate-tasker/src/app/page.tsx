@@ -138,9 +138,13 @@ export default function DashboardPage() {
     }
 
     try {
+      const idToken = await user.getIdToken();
       await fetch('/api/notifications/trigger', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+        },
         body: JSON.stringify({
           targetTokens: member.fcmTokens,
           title: `🔔 Reminder: ${task.name}`,

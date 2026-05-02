@@ -28,17 +28,20 @@ function getAdmin() {
 }
 
 router.post("/notifications/trigger", async (req, res) => {
-  const notifySecret = process.env.NOTIFY_SECRET;
-  if (process.env.NODE_ENV === "production" && !notifySecret) {
-    res.status(503).json({ error: "NOTIFY_SECRET is not configured" });
+  const authHeader = req.headers["authorization"];
+  const idToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!idToken) {
+    res.status(401).json({ error: "Missing Authorization header" });
     return;
   }
-  if (notifySecret) {
-    const authHeader = req.headers["authorization"];
-    if (!authHeader || authHeader !== `Bearer ${notifySecret}`) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
+  try {
+    const adminSdkForAuth = getAdmin();
+    if (adminSdkForAuth.apps.length) {
+      await adminSdkForAuth.auth().verifyIdToken(idToken);
     }
+  } catch {
+    res.status(401).json({ error: "Invalid or expired token" });
+    return;
   }
 
   const { targetTokens, title, message } = req.body as {
