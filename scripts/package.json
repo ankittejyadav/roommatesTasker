@@ -5,7 +5,11 @@
   "type": "module",
   "scripts": {
     "hello": "tsx ./src/hello.ts",
+    "setup-firebase-domains": "tsx ./src/setup-firebase-domains.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "google-auth-library": "^10.6.2"
   },
   "devDependencies": {
     "@types/node": "catalog:",

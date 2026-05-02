@@ -642,6 +642,10 @@ importers:
         version: 0.31.9
 
   scripts:
+    dependencies:
+      google-auth-library:
+        specifier: ^10.6.2
+        version: 10.6.2
     devDependencies:
       '@types/node':
         specifier: 'catalog:'

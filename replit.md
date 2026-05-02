@@ -70,5 +70,9 @@ Before deploying to production, ensure the following secrets are configured in R
 | `CRON_SECRET` | Shared secret to authorize `GET /api/cron/reminders` |
 
 ### Required Firebase Console setup
-1. **Authorized Domains**: Add your Replit dev domain (`*.replit.dev`) and production domain (`*.replit.app`) under Firebase Console → Authentication → Settings → Authorized Domains so Google Sign-In works.
+1. **Authorized Domains**: Go to [Firebase Console](https://console.firebase.google.com) → Project `roommatestasker` → Authentication → Settings → Authorized Domains and add **both** of the following:
+   - Dev domain: `97e938ed-e754-4e19-a780-69aa5c859f82-00-gljeal1uselc-n8d5r2g9.kirk.replit.dev`
+   - Production domain: add after first deploy (shown in Replit's Publish panel as the `.replit.app` URL)
+   
+   Without these entries Google Sign-In will be blocked with an `auth/unauthorized-domain` error.
 2. **Service Worker**: `public/firebase-messaging-sw.js` is generated automatically at build/dev time from `src/firebase-messaging-sw.template.js` — do not edit the generated file directly.
