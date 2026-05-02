@@ -126,7 +126,7 @@ export default function DashboardPage() {
   }, [houseId, data, overrideTaskId]);
 
   const handleRemind = async (taskId: string) => {
-    if (!houseId || !data) return;
+    if (!houseId || !data || !user) return;
     const task = data.tasks.find((t) => t.id === taskId);
     if (!task) return;
 
