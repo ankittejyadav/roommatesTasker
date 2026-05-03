@@ -6,5 +6,9 @@ export const modules: ModuleMap = {
   "./components/mockups/roommate-login/Warm.tsx": () => import("../components/mockups/roommate-login/Warm.tsx"),
   "./components/mockups/roommate-login/WarmAccessible.tsx": () => import("../components/mockups/roommate-login/WarmAccessible.tsx"),
   "./components/mockups/roommate-login/WarmAffordance.tsx": () => import("../components/mockups/roommate-login/WarmAffordance.tsx"),
-  "./components/mockups/roommate-login/WarmHierarchy.tsx": () => import("../components/mockups/roommate-login/WarmHierarchy.tsx")
+  "./components/mockups/roommate-login/WarmHierarchy.tsx": () => import("../components/mockups/roommate-login/WarmHierarchy.tsx"),
+  "./components/mockups/roommate-login/WarmInvite.tsx": () => import("../components/mockups/roommate-login/WarmInvite.tsx"),
+  "./components/mockups/roommate-login/WarmPreview.tsx": () => import("../components/mockups/roommate-login/WarmPreview.tsx"),
+  "./components/mockups/roommate-login/WarmSocial.tsx": () => import("../components/mockups/roommate-login/WarmSocial.tsx"),
+  "./components/mockups/roommate-login/WarmTour.tsx": () => import("../components/mockups/roommate-login/WarmTour.tsx")
 };
