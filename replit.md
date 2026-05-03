@@ -29,15 +29,21 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 ## Artifacts
 
 ### Roommate Tasker (`artifacts/roommate-tasker`)
-- **Kind**: React + Vite web app
+- **Kind**: Svelte 5 + Vite web app (fully rewritten from React)
 - **Port**: 18299, preview path `/`
-- **Stack**: React 19, Wouter (routing), Firebase client SDK (Auth + Firestore + FCM messaging), CSS Modules
+- **Stack**: Svelte 5, `@sveltejs/vite-plugin-svelte` 5.x, Firebase client SDK (Auth + Firestore + FCM messaging), plain CSS (no Tailwind/Radix/Lucide)
+- **Routing**: Custom store-based router (`src/lib/router.ts`) — `router` writable store + `navigate()` helper
+- **Auth**: Svelte store-based (`src/lib/auth.ts`) — `user` + `authLoading` writables, `initAuth()`, `signInWithGoogle()`, `signOut()`
+- **Entry**: `src/main.ts` → `mount(App, { target: ... })` (Svelte 5 API)
+- **Design system**: `src/styles/global.css` (CSS vars, utility classes — no Tailwind)
+- **Login design**: "Warm Home" — cream `#fdfbf7`, terracotta `#e07a5f`, DM Sans font
 - **Pages**: `/` dashboard, `/login`, `/join`, `/admin`, `/settings`, `/history`, `/chat`, `/shopping`, `/personal`, `/feedback`
+- **Components**: `BottomNav.svelte`, `TaskCard.svelte`, `OverrideModal.svelte`
 - **Firebase env vars** (all stored as Replit secrets):
   - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`
   - `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`
   - `VITE_FIREBASE_VAPID_KEY` (for FCM push notifications)
-- **Migrated from**: Vercel/Next.js (replaced `useRouter`/`next/navigation` → wouter, `next/link` → wouter Link, removed `'use client'` directives, `NEXT_PUBLIC_*` → `VITE_*`)
+- **Backend lib files kept as-is**: `src/lib/firebase.ts`, `src/lib/firestore.ts`, `src/lib/types.ts`, `src/lib/schedule.ts`, `src/lib/notifications.ts`
 
 ### API Server (`artifacts/api-server`)
 - **Kind**: Express API

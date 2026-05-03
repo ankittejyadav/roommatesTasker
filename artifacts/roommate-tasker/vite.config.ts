@@ -1,6 +1,5 @@
 import { defineConfig, Plugin } from "vite";
-import react from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import fs from "fs";
@@ -44,8 +43,7 @@ export default defineConfig({
   base: basePath,
   plugins: [
     firebaseSwPlugin(),
-    react(),
-    tailwindcss(),
+    svelte(),
     runtimeErrorOverlay(),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
@@ -66,7 +64,7 @@ export default defineConfig({
       "@": path.resolve(import.meta.dirname, "src"),
       "@assets": path.resolve(import.meta.dirname, "..", "..", "attached_assets"),
     },
-    dedupe: ["react", "react-dom"],
+
   },
   root: path.resolve(import.meta.dirname),
   build: {
