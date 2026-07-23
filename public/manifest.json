@@ -1,0 +1,16 @@
+{
+    "name": "TaskSync",
+    "short_name": "TaskSync",
+    "description": "Manage and rotate household chores with TaskSync",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a1a",
+    "theme_color": "#0a0a1a",
+    "icons": [
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

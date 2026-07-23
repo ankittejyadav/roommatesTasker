@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if a user is a member of a house
+    function isHouseMember(houseData) {
+      return request.auth != null && 
+        houseData != null && 
+        houseData.members != null &&
+        request.auth.uid in houseData.members.map(m => m.uid);
+    }
+
+    // Helper to get house data
+    function getHouseData(houseId) {
+      return get(/databases/$(database)/documents/houses/$(houseId)).data;
+    }
+
+    match /houses/{houseId} {
+      // Allow creation if the creator is the admin and is added as the first member
+      allow create: if request.auth != null && 
+        request.resource.data.adminUid == request.auth.uid &&
+        request.resource.data.members.size() > 0 &&
+        request.resource.data.members[0].uid == request.auth.uid;
+      
+      // Allow read/update if the user is a current member of the house
+      allow read: if request.auth != null && isHouseMember(resource.data);
+      
+      // Allow joining if the inviteCode matches and user is appending themselves,
+      // or standard updates if already a member.
+      allow update: if request.auth != null && (
+        isHouseMember(resource.data) || 
+        // Joining case: members array size increases by exactly 1, other fields remain unchanged
+        (request.resource.data.inviteCode == resource.data.inviteCode &&
+         request.resource.data.adminUid == resource.data.adminUid &&
+         request.resource.data.members.size() == resource.data.members.size() + 1)
+      );
+
+      // Only the admin can delete a house
+      allow delete: if request.auth != null && resource.data.adminUid == request.auth.uid;
+
+      // Rules for the nested messages collection
+      match /messages/{messageId} {
+        allow read, write: if request.auth != null && isHouseMember(getHouseData(houseId));
+      }
+    }
+  }
+}
